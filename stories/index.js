@@ -17,6 +17,7 @@ import Show from "components/Appointment/Show";
 import Confirm from "components/Appointment/Confirm";
 import Status from "components/Appointment/Status";
 import Error from "components/Appointment/Error";
+import Form from 'components/Appointment/Form';
 
 storiesOf("Button", module)
   .addParameters({
@@ -139,30 +140,46 @@ storiesOf("InterviewerList", module)
     backgrounds: [{ name: "white", value: "#fff", default: true }]
   })
   .add("Appointment", () => <Appointment />)
-  .add("Header", () => <Header time="12pm" />)
+  .add("Header", () => <Header time="3pm" />)
   .add("Empty", () => <Empty onAdd={action("onAdd")} />)
-  .add('Show', () => <Show 
-    student='Joao Goncalves Jr' 
+  .add("Show", () => <Show 
+    student="Joao Goncalves Jr" 
     interviewer={interviewers[1]} 
-    onEdit={action('onEdit')} 
-    onDelete={action('onDelete')} 
+    onEdit={action("onEdit")} 
+    onDelete={action("onDelete")} 
     />
   )
-  .add('Confirm', () => <Confirm 
-    message='Delete the appointment?' 
-    onConfirm={action('onConfirm')} 
-    onCancel={action('onCancel')} 
+  .add("Confirm", () => <Confirm 
+    message="Delete the appointment?" 
+    onConfirm={action("onConfirm")} 
+    onCancel={action("onCancel")} 
     />
   )
   .add("Saving", () => <Status message="Saving" />)
   .add("Deleting", () => <Status message="Deleting" />)
   .add("Error Saving", () => <Error 
-  message="Could not save appointment."
-  onClose={action('onClose')}
+    message="Could not save appointment."
+    onClose={action("onClose")}
   />
   )
   .add("Error Deleting", () => <Error 
     message="Could not delete appointment."
-    onClose={action('onClose')}
+    onClose={action("onClose")}
     />
-  );
+  )
+  .add("Create Form", () => (
+    <Form 
+      interviewers={interviewers}
+      onSave={action("onSave")}
+      onCancel={action("onCancel")}
+    />
+  ))
+  .add("Edit Form", () => (
+    <Form 
+      name="Juan Caminero"
+      interviewers={interviewers}
+      interviewer={4}
+      onSave={action("onSave")}
+      onCancel={action("onCancel")}
+    />
+  ));
