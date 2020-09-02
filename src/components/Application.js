@@ -5,66 +5,36 @@ import "components/Application.scss";
 
 import DayList from "components/DayList";
 import Appointment from "components/Appointment";
-
-const appointments = [
-  {
-    id: 1,
-    time: "12pm"
-  },
-  {
-    id: 2,
-    time: "1pm",
-    interview: {
-      student: "Lydia Miller-Jones",
-      interviewer: {
-        id: 1,
-        name: "Sylvia Palmer",
-        avatar: "https://i.imgur.com/LpaY82x.png"
-      }
-    }
-  },
-  {
-    id: 3,
-    time: "2pm",
-    interview: {
-      student: "Joe Smith",
-      interviewer: {
-        id: 1,
-        name: "Sylvia Palmer",
-        avatar: "https://i.imgur.com/LpaY82x.png"
-      }
-    }
-  },
-  {
-    id: 4,
-    time: "3pm",
-    interview: {
-      student: "Joao Goncalves Jr",
-      interviewer: {
-        id: 1,
-        name: "Sylvia Palmer",
-        avatar: "https://i.imgur.com/LpaY82x.png"
-      }
-    }
-  },
-  {
-    id: 5,
-    time: "4pm"
-  }
-];
+import { getAppointmentsForDay } from "../helpers/selectors";
 
 export default function Application(props) {
 
-  const [day, setDay] = useState("Monday");
-  const [days, setDays] = useState([]);
-  const url = "http://localhost:8001";
+  const [state, setState] = useState({
+    day: "Monday",
+    days: [],
+    appointments: {}
+  });
+  const setDay = day => {
+    setState({
+      ...state,
+      day
+    })
+  };
 
   useEffect(() => {
-    axios.get(`${url}/api/days`)
-      .then((res) => {
-        setDays(res.data);
-      });
+    Promise.all([
+      Promise.resolve(axios.get("/api/days")),
+      Promise.resolve(axios.get("/api/appointments")),
+    ]).then(all => {
+        setState(prev => ({
+          ...prev,
+          days: all[0].data,
+          appointments: all[1].data
+        }))
+      })
   }, []);
+
+  const appointments = getAppointmentsForDay(state, state.day);
 
   return (
     <main className="layout">
@@ -77,8 +47,8 @@ export default function Application(props) {
       <hr className="sidebar__separator sidebar--centered" />
       <nav className="sidebar__menu">
         <DayList
-          days={days}
-          day={day}
+          days={state.days}
+          day={state.day}
           setDay={setDay}
           />
       </nav>
