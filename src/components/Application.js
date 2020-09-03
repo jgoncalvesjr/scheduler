@@ -28,7 +28,8 @@ export default function Application(props) {
       Promise.resolve(axios.get("/api/days")),
       Promise.resolve(axios.get("/api/appointments")),
       Promise.resolve(axios.get("/api/interviewers")),
-    ]).then(all => {
+    ])
+      .then(all => {
         setState(prevState => ({
           ...prevState,
           days: all[0].data,
@@ -53,8 +54,32 @@ export default function Application(props) {
       [id]: appointment
     };
 
-    const updateAppointments = axios.put(`/api/appointments/${id}`, {interview});
-    return Promise.resolve(updateAppointments)
+    const newAppointment = axios.put(`/api/appointments/${id}`, {interview});
+    return Promise.resolve(newAppointment)
+      .then(() => {
+        setState(prevState => ({
+          ...prevState,
+          appointments
+          }))
+      })
+      .catch(error => console.log(error));
+
+  }
+
+  const removeInterview = (id) => {
+
+    const appointment = {
+      ...state.appointments[id],
+      interview: null
+    }
+
+    const appointments = {
+      ...state.appointments,
+      [id]: appointment
+    };
+
+    const newAppointment = axios.delete(`/api/appointments/${id}`);
+    return Promise.resolve(newAppointment)
     .then(() => {
       setState(prevState => ({
         ...prevState,
@@ -62,8 +87,7 @@ export default function Application(props) {
         }))
     })
     .catch(error => console.log(error));
-
-  }
+  }  
 
   const schedule = appointments.map((appointment) => {
     const interview = getInterview(state, appointment.interview);
@@ -76,6 +100,7 @@ export default function Application(props) {
         interview={interview}
         interviewers={interviewers}
         bookInterview={bookInterview}
+        removeInterview={removeInterview}
       />
     );
   });
