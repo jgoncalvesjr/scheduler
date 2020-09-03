@@ -29,3 +29,20 @@ export function getAppointmentsForDay(state, day) {
 
   }
 }
+
+export function getInterviewersForDay(state, day) {
+  const result = [];
+  const interviewerFilter = state.days.filter(d => d.name === day);
+
+  if (!state.days.length || !interviewerFilter.length) {
+
+    return result;
+
+  } else {
+
+    const interviewers = interviewerFilter[0].interviewers;
+    interviewers.forEach(i => result.push(state.interviewers[i]));
+    return result;
+
+  }
+}
