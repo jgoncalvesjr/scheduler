@@ -14,35 +14,29 @@ export function getInterview(state, interview) {
 }
 
 export function getAppointmentsForDay(state, day) {
-  const result = [];
-  const appointmentFilter = state.days.filter(d => d.name === day);
+  // retrieve the day object for that day
+  const dayFound = state.days.find(dayObj => dayObj.name === day)
 
-  if (!state.days.length || !appointmentFilter.length) {
-
-    return result;
-
-  } else {
-
-    const appointments = appointmentFilter[0].appointments;
-    appointments.forEach(a => result.push(state.appointments[a]));
-    return result;
-
+  if (!dayFound) {
+    return [];
   }
+
+  // convert the appointments Ids from dayFound.appointments into the actual appointments objects
+  const appointments = dayFound.appointments.map(appointId => state.appointments[appointId]);
+  return appointments;
+
 }
 
 export function getInterviewersForDay(state, day) {
-  const result = [];
-  const interviewerFilter = state.days.filter(d => d.name === day);
+  
+  const dayFound = state.days.find(dayObj => dayObj.name === day)
 
-  if (!state.days.length || !interviewerFilter.length) {
-
-    return result;
-
-  } else {
-
-    const interviewers = interviewerFilter[0].interviewers;
-    interviewers.forEach(i => result.push(state.interviewers[i]));
-    return result;
-
+  if (!dayFound) {
+    return [];
   }
+  
+  // convert the appointments Ids from dayFound.appointments into the actual appointments objects
+  const interviewers = dayFound.interviewers.map(interviewerId => state.interviewers[interviewerId]);
+  return interviewers;
+
 }
