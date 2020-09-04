@@ -4,15 +4,15 @@ export default function useVisualMode(initial) {
   const [mode, setMode] = useState(initial);
   const [history, setHistory] = useState([initial]);
 
-  const transition = (mode, replace = false) => {
+  const transition = (newMode, replace = false) => {
 
     if (replace) {
-      setMode(mode);
+      setMode(newMode);
 
     } else {
 
-      setMode(mode);
-      setHistory(prev => ([...prev, mode]));
+      setMode(newMode);
+      setHistory(prev => ([...prev, newMode]));
     }
 
   };
@@ -21,13 +21,14 @@ export default function useVisualMode(initial) {
 
     if (history.length > 1) {
 
-      setMode(history[history.length - 2]);
-      setHistory((history.slice(0, -1)));
-
+      const newHistory = history.slice(0, -1);
+      setMode(newHistory[newHistory.length - 1]);
+      setHistory(newHistory);
+  
     } else {
 
       setMode(history[0]);
-      
+
     }
   };
 

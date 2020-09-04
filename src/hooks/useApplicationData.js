@@ -49,7 +49,8 @@ export default function useApplicationData() {
       .then(() => {
         setState(prevState => ({
           ...prevState,
-          appointments
+          appointments,
+          days: getRemainingSpots(state.days, appointments)
           }))
       });
 
@@ -71,11 +72,36 @@ export default function useApplicationData() {
       .then(() => {
         setState(prevState => ({
           ...prevState,
-          appointments
+          appointments,
+          days: getRemainingSpots(state.days, appointments)
           }))
       });
  
     }  
+
+    const remainingSpots = (day, appointments) => {
+      let spots = 0;
+      const bookedSpots = day.appointments;
+      bookedSpots.forEach(spot => {
+
+        if (appointments[spot].interview === null) {
+          spots++;
+        }
+
+      });
+
+      return spots;
+
+    };
+
+    const getRemainingSpots = (days, appointments) => {
+      const newRemainingSpots = days.map(day => ({
+        ...day, spots: remainingSpots(day, appointments)
+      }));
+
+      return newRemainingSpots;
+      
+    }
 
     return {
       state,
