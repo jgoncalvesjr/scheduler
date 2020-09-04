@@ -54,15 +54,13 @@ export default function Application(props) {
       [id]: appointment
     };
 
-    const newAppointment = axios.put(`/api/appointments/${id}`, {interview});
-    return Promise.resolve(newAppointment)
+    return axios.put(`/api/appointments/${id}`, {interview})
       .then(() => {
         setState(prevState => ({
           ...prevState,
           appointments
           }))
-      })
-      .catch(error => console.log(error));
+      });
 
   }
 
@@ -78,16 +76,15 @@ export default function Application(props) {
       [id]: appointment
     };
 
-    const newAppointment = axios.delete(`/api/appointments/${id}`);
-    return Promise.resolve(newAppointment)
-    .then(() => {
-      setState(prevState => ({
-        ...prevState,
-        appointments
-        }))
-    })
-    .catch(error => console.log(error));
-  }  
+    return axios.delete(`/api/appointments/${id}`)
+      .then(() => {
+        setState(prevState => ({
+          ...prevState,
+          appointments
+          }))
+      });
+ 
+    }  
 
   const schedule = appointments.map((appointment) => {
     const interview = getInterview(state, appointment.interview);
