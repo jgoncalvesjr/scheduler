@@ -25,11 +25,8 @@ export default function useVisualMode(initial) {
       setMode(newHistory[newHistory.length - 1]);
       setHistory(newHistory);
   
-    } else {
+    } 
 
-      setMode(history[0]);
-
-    }
   };
 
   return {
