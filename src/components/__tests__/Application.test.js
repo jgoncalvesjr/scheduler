@@ -1,5 +1,7 @@
 import React from "react";
 
+import axios from "axios";
+
 import { 
   render, 
   cleanup, 
@@ -21,13 +23,12 @@ describe("Application", () => {
   it("changes the schedule when a new day is selected", async () => {
     const { getByText, queryByText } = render(<Application />);
 
-
     await waitForElement(() => getByText("Monday"));
 
     fireEvent.click(getByText("Tuesday"));
 
     expect(getByText("Leopold Silvers")).toBeInTheDocument();
-    expect(queryByText('Archie Cohen')).toBeNull();
+    expect(queryByText("Archie Cohen")).toBeNull();
   });
 
   it("loads data, books an interview and reduces the spots remaining for Monday by 1", async () => {
@@ -127,6 +128,73 @@ describe("Application", () => {
       queryByText(day, "Monday")
     );
     expect(getByText(day, "1 spot remaining")).toBeInTheDocument();
+  });
+
+  it("shows the save error when failing to save an appointment", async () => {
+    // 1. Axios mocks a failed PUT request
+    axios.put.mockRejectedValueOnce();
+    
+    // 2. Render the Application.
+    const { container } = render(<Application />);
+
+    // 3. Wait until the text "Archie Cohen" is displayed.
+    await waitForElement(() => getByText(container, "Archie Cohen"));
+
+    // 4. Clicks to add a new appointment.
+    const appointments = getAllByTestId(container, "appointment");
+    const appointment = appointments[0];
+
+    fireEvent.click(getByAltText(appointment, "Add"));
+
+    // 5. Inserts student name and chooses an interviewer, and saves
+    fireEvent.change(getByPlaceholderText(appointment, /enter student name/i), {
+      target: { value: "Lydia Miller-Jones" }
+    });
+    
+    fireEvent.click(getByAltText(appointment, "Sylvia Palmer"));
+    fireEvent.click(getByText(appointment, "Save"));
+
+    // 6. Check that the element with the text "Saving" is displayed.
+    expect(getByText(appointment, "Saving")).toBeInTheDocument();
+
+    // 7. Error component should be loaded from request failure.
+    await waitForElement(() => getByText(appointment, "Unable to save appointment."));
+
+    // 8. Saving error message should be visible to the user.
+    expect(getByText(appointment, "Unable to save appointment.")).toBeInTheDocument();
+  });
+
+  it("shows the delete error when failing to delete an existing appointment", async () => {
+    // 1. Axios mocks a failed DELETE request
+    axios.delete.mockRejectedValueOnce();
+
+    // 2. Render the Application.
+    const { container } = render(<Application />);
+  
+    // 3. Wait until the text "Archie Cohen" is displayed.
+    await waitForElement(() => getByText(container, "Archie Cohen"));
+  
+    // 4. Click the "Delete" button on the booked appointment.
+    const appointment = getAllByTestId(container, "appointment").find(
+      appointment => queryByText(appointment, "Archie Cohen")
+    );
+  
+    fireEvent.click(queryByAltText(appointment, "Delete"));
+  
+    // 5. Check that the confirmation message is shown.
+    expect(getByText(appointment, "Are you sure you would like to delete the appointment?")).toBeInTheDocument();
+
+    // 6. Click the "Confirm" button on the confirmation.
+    fireEvent.click(getByText(appointment, "Confirm"));
+
+    // 7. Check that the element with the text "Deleting" is displayed.
+    expect(getByText(appointment, "Deleting")).toBeInTheDocument();   
+    
+    // 8. Error component should be loaded from request failure.
+    await waitForElement(() => getByText(appointment, "Unable to delete appointment."));
+
+    // 9. Deleting error message should be visible to the user.
+    expect(getByText(appointment, "Unable to delete appointment.")).toBeInTheDocument();    
   });
 
 });
