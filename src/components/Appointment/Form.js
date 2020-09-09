@@ -3,23 +3,28 @@ import React, { useState } from "react";
 import InterviewerList from "../InterviewerList";
 import Button from "../Button";
 
+//  Form component displaying student name and interviewes available for day
 
 export default function Form(props) {
 
+  // State for student name, interviewer and error message, when applicable
   const [name, setName] = useState(props.name || "");
   const [interviewer, setInterviewer] = useState(props.interviewer || null);
   const [error, setError] = useState("");
 
+  // Resets form
   const reset = () => {
     setName("");
     setInterviewer(null);
   }
 
+  // When Cancel button is pressed, form is reset
   const cancel = () => {
     reset();
     props.onCancel();
   }
 
+  // Validates if a student name or interviewer are blank. Saves if both are filled
   const validate = () => {
     
     if (!name) {

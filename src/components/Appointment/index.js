@@ -23,10 +23,12 @@ export default function Appointment(props) {
   const ERROR_SAVE = "ERROR_SAVE";
   const ERROR_DELETE = "ERROR_DELETE";
 
+  //  Transitions SHOW or EMPTY, depending on existing interview or not
   const { mode, transition, back } = useVisualMode(
     props.interview? SHOW : EMPTY
   );
 
+  //  Transitions SAVING animation when saving interview, then SAVE when ends or ERROR_SAVE if an error prevents saving
   function save(name, interviewer) {
     const interview = {
       student: name,
@@ -38,6 +40,7 @@ export default function Appointment(props) {
       .catch(() => transition(ERROR_SAVE, true));  
   }
 
+  //  Transitions DELETING animation when deleting interview, then EMPTY when ends or ERROR_DELETE if an error prevents saving
   function remove(id) {
     transition(DELETING, true);
     props.removeInterview(id)
@@ -45,6 +48,7 @@ export default function Appointment(props) {
       .catch(() => transition(ERROR_DELETE, true));
   }
 
+  //  Renders appointment component depending on current state of each slot
   return (
     <article className="appointment" data-testid="appointment">
       <Header time={props.time} />
@@ -66,7 +70,7 @@ export default function Appointment(props) {
       }
       {mode === CONFIRM && 
       <Confirm 
-        message="Are you sure?" 
+        message="Are you sure you would like to delete the appointment?" 
         onCancel={back} 
         onConfirm={() => remove(props.id)} 
       />

@@ -21,26 +21,34 @@ afterEach(cleanup);
 describe("Application", () => {
 
   it("changes the schedule when a new day is selected", async () => {
+    // 1. Render the Application.
     const { getByText, queryByText } = render(<Application />);
-
+    
+    // 2. Wait day "Monday" do be displayed.
     await waitForElement(() => getByText("Monday"));
 
+    // 3. Click on day "Tuesday".
     fireEvent.click(getByText("Tuesday"));
 
+    // 4. Verify the correct names are displayed, according to fixtures.
     expect(getByText("Leopold Silvers")).toBeInTheDocument();
     expect(queryByText("Archie Cohen")).toBeNull();
   });
 
   it("loads data, books an interview and reduces the spots remaining for Monday by 1", async () => {
+    // 1. Render the Application.
     const { container } = render(<Application />);
 
+    // 2. Wait until the text "Archie Cohen" is displayed.
     await waitForElement(() => getByText(container, "Archie Cohen"));
 
+    // 3. Click to add a new appointment.
     const appointments = getAllByTestId(container, "appointment");
     const appointment = appointments[0];
 
     fireEvent.click(getByAltText(appointment, "Add"));
 
+    // 4. Insert student name and chooses an interviewer, and save.
     fireEvent.change(getByPlaceholderText(appointment, /enter student name/i), {
       target: { value: "Lydia Miller-Jones" }
     });
@@ -48,10 +56,13 @@ describe("Application", () => {
     fireEvent.click(getByAltText(appointment, "Sylvia Palmer"));
     fireEvent.click(getByText(appointment, "Save"));
 
+    // 5. "Saving" display is shown.
     expect(getByText(appointment, "Saving")).toBeInTheDocument();
-    
+
+    // 6. New appointment is visible.
     await waitForElement(() => getByText(appointment, "Lydia Miller-Jones"));
 
+    // 7. Appointments available for Monday are reduced by one.
     const day = getAllByTestId(container, "day").find(day =>
       queryByText(day, "Monday")
     );

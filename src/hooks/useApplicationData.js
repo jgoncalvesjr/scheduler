@@ -3,6 +3,7 @@ import axios from 'axios';
 
 export default function useApplicationData() {
 
+  // Initial state
   const [state, setState] = useState({
     day: "Monday",
     days: [],
@@ -10,6 +11,7 @@ export default function useApplicationData() {
     interviewers: {}
   });
 
+  // Updates day when days are switched
   const setDay = day => {
     setState({
       ...state,
@@ -17,6 +19,7 @@ export default function useApplicationData() {
     })
   };
 
+  // Collects initial data from database when app is loaded
   useEffect(() => {
     Promise.all([
       Promise.resolve(axios.get("/api/days")),
@@ -31,8 +34,10 @@ export default function useApplicationData() {
           interviewers: all[2].data
         }))
       })
+      .catch(err => console.log(err.message));
   }, []);
 
+  // Creates a new interview appointment, sends collected data to database
   const bookInterview = (id, interview) => {
 
     const appointment = {
@@ -56,6 +61,7 @@ export default function useApplicationData() {
 
   }
 
+  // Deletes an existing interview appointment, removes data from database
   const removeInterview = (id) => {
 
     const appointment = {
@@ -77,37 +83,38 @@ export default function useApplicationData() {
           }))
       });
  
-    }  
+  }
 
-    const remainingSpots = (day, appointments) => {
-      let spots = 0;
-      const bookedSpots = day.appointments;
-      bookedSpots.forEach(spot => {
+  // Calculates interview spots left, so the state is updated whenever an interview is booked or cancelled 
+  const remainingSpots = (day, appointments) => {
+    let spots = 0;
+    const bookedSpots = day.appointments;
+    bookedSpots.forEach(spot => {
 
-        if (appointments[spot].interview === null) {
-          spots++;
-        }
+      if (appointments[spot].interview === null) {
+        spots++;
+      }
 
-      });
+    });
 
-      return spots;
+    return spots;
 
-    };
+  };
 
-    const getRemainingSpots = (days, appointments) => {
-      const newRemainingSpots = days.map(day => ({
-        ...day, spots: remainingSpots(day, appointments)
-      }));
+  const getRemainingSpots = (days, appointments) => {
+    const newRemainingSpots = days.map(day => ({
+      ...day, spots: remainingSpots(day, appointments)
+    }));
 
-      return newRemainingSpots;
+    return newRemainingSpots;
       
-    }
+  }
 
-    return {
-      state,
-      setDay,
-      bookInterview,
-      removeInterview
-    };
+  return {
+    state,
+    setDay,
+    bookInterview,
+    removeInterview
+  };
 
 }

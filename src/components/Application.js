@@ -7,8 +7,9 @@ import Appointment from "components/Appointment";
 import { getAppointmentsForDay, getInterview, getInterviewersForDay } from "../helpers/selectors";
 import useApplicationData from "../hooks/useApplicationData";
 
-export default function Application(props) {
-
+export default function Application() {
+  
+  // Imports application management hooks 
   const {
     state,
     setDay,
@@ -16,6 +17,7 @@ export default function Application(props) {
     removeInterview
   } = useApplicationData();
 
+  // Builds appointments and interviews (schedule) for the day
   const appointments = getAppointmentsForDay(state, state.day);
   const interviewers = getInterviewersForDay(state, state.day);
 
